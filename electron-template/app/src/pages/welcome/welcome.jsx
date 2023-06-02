@@ -11,10 +11,10 @@ class Welcome extends React.Component {
             <section className="hero is-info">
               <div className="hero-body">
                 <p className="title">
-                  Thank you for trying out the secure-electron-template!
+                  Welcome to PictoApp, an AI-Driven Canvas at your fingertips.
                 </p>
                 <p className="subtitle">
-                  Please navigate to view the features of this template.
+                  Please try out this demo to start!
                 </p>
               </div>
             </section>
@@ -29,6 +29,7 @@ class Welcome extends React.Component {
               <Link to={ROUTES.UNDOREDO}>Undo/redoing actions.</Link> <br />
               <Link to={ROUTES.CONTEXTMENU}>Custom context menu.</Link> <br />
               <Link to={ROUTES.IMAGE}>Sample image loaded.</Link> <br />
+              <Link to={ROUTES.CANVAS}>Try the demo here! ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←</Link> <br />
             </div>
           </div>
         </section>
