@@ -1,4 +1,1 @@
-# sokem.ai
-## README
- sokem
 
