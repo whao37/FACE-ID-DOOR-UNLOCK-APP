@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
-import { signUp } from '@aws-amplify/auth';
+import { useNavigation } from '@react-navigation/native';
+import { confirmSignUp, signUp } from '@aws-amplify/auth';
 
-const RegistrationScreen = ({ navigation }) => {
+const RegistrationScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [showVerification, setShowVerification] = useState(false);//control verification
+  const navigation = useNavigation();
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -14,47 +18,83 @@ const RegistrationScreen = ({ navigation }) => {
     }
 
     try {
-      const { user } = await signUp({
+      await signUp({
         username: email,
         password,
         attributes: {
           email,
         },
       });
-      console.log('Registration successful', user);
-      alert('Registration successful! Check your email for verification.');
-      //navigation.navigate('Login');for login function (later use.)
+      console.log('Registration successful');
+      setShowVerification(true);//verification sent to email
+      alert('Registration successful! Check your email for verification code.');
     } catch (error) {
       console.error('Error signing up:', error);
       alert(error.message);
     }
   };
 
+  const handleVerify = async () => {
+    if (!verificationCode.trim()) {
+      alert('Enter the verification code sent to your email.');
+      return;
+    }
+  
+    console.log('Verifying with email:', email);//debugber
+  
+    try {
+      await confirmSignUp({
+        username: email,
+        confirmationCode: verificationCode,
+      });
+      alert('Verification successful! You can now login.');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Error verifying code:', error);
+      alert(error.message);
+    }
+  };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Registration</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
-      <Button title="Register" onPress={handleRegister} />
+      {!showVerification ? (
+        <>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
+          <Button title="Register" onPress={handleRegister} />
+        </>
+      ) : (
+        <>
+          <TextInput
+            style={styles.input}
+            placeholder="Verification Code"
+            value={verificationCode}
+            onChangeText={setVerificationCode}
+          />
+          <Button title="Verify Email" onPress={handleVerify} />
+        </>
+      )}
+      <Button title="Have an account? Sign in here" onPress={() => navigation.navigate('Login')} color="blue" />
     </View>
   );
 };
